@@ -7,10 +7,10 @@ Below is a complete, step-by-step guide from scratch, written assuming Windows 1
 
 Architecture (Simple)
 
-Windows Laptop
- ├── windows_exporter  → exposes metrics on :9182
- ├── Prometheus        → scrapes metrics on :9090
- └── Grafana           → visualizes metrics on :3000
+Windows Laptop <br>
+ ├── windows_exporter  → exposes metrics on :9182 <br>
+ ├── Prometheus        → scrapes metrics on :9090 <br>
+ └── Grafana           → visualizes metrics on :3000 <br>
 
 
  STEP 1: Install Windows Exporter (Metrics Agent)
