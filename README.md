@@ -197,8 +197,8 @@ System uptime
 
 # Cloud setup
 
-Architecture
-Windows Laptop
+Architecture <br>
+Windows Laptop <br>
  └── windows_exporter :9182 <br>
        ▲ <br>
        │ Cloudflare Tunnel (outbound only) <br>
@@ -225,19 +225,22 @@ cloudflared-windows-amd64.exe
 
 
 Rename it to:
-
+```
 cloudflared.exe
-
+```
 
 Move it to:
-
+```
 C:\Program Files\Cloudflare\
+````
 
 ✅ STEP 2: Test cloudflared using FULL PATH (IMPORTANT)
 
 Open PowerShell and run this exact command:
 
+```
 "C:\Program Files\Cloudflare\cloudflared.exe" --version
+```
 
 🔹 Result?
 
@@ -252,9 +255,9 @@ Open PowerShell and run this exact command:
 Press Win + R
 
 Type:
-
+```
 sysdm.cpl
-
+```
 
 Open Advanced tab
 
@@ -269,9 +272,9 @@ Click Edit
 Click New
 
 Paste:
-
+```
 C:\Program Files\Cloudflare\
-
+```
 
 Click OK → OK → OK
 
@@ -288,13 +291,39 @@ Close Command Prompt
 ✅ STEP 5: Verify Again
 
 Open NEW PowerShell and run:
-
+```
 cloudflared --version
-
+```
 
 Expected:
 
 cloudflared version 2025.x.x
+
+# STEP 2: Start Tunnel (NO LOGIN, NO DOMAIN)
+
+Run this on your laptop:
+```
+cloudflared tunnel --url http://localhost:9182
+```
+
+Output will look like:
+
+https://calm-mouse-9182.trycloudflare.com
+
+
+📌 COPY THIS URL — very important
+
+ # STEP 3: Verify windows_exporter via Cloudflare
+
+Open in browser:
+```
+https://calm-mouse-9182.trycloudflare.com/metrics
+```
+
+You should see:
+
+HELP windows_cpu_time_total ...
+
 
 # ubuntu 22.04 (t2.medium)
 
@@ -307,25 +336,31 @@ Set up Prometheus and Grafana to monitor your application.
 Installing Prometheus:
 
 First, create a dedicated Linux user for Prometheus and download Prometheus:
-
+```
 sudo useradd --system --no-create-home --shell /bin/false prometheus
 wget https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.tar.gz
+```
 Extract Prometheus files, move them, and create directories:
-
+```
 tar -xvf prometheus-2.47.1.linux-amd64.tar.gz
 cd prometheus-2.47.1.linux-amd64/
 sudo mkdir -p /data /etc/prometheus
 sudo mv prometheus promtool /usr/local/bin/
 sudo mv consoles/ console_libraries/ /etc/prometheus/
 sudo mv prometheus.yml /etc/prometheus/prometheus.yml
+```
 Set ownership for directories:
-
+```
 sudo chown -R prometheus:prometheus /etc/prometheus/ /data/
-Create a systemd unit configuration file for Prometheus:
+```
 
+Create a systemd unit configuration file for Prometheus:
+```
 sudo nano /etc/systemd/system/prometheus.service
+```
 Add the following content to the prometheus.service file:
 
+```
 [Unit]
 Description=Prometheus
 Wants=network-online.target
@@ -350,6 +385,8 @@ ExecStart=/usr/local/bin/prometheus \
 
 [Install]
 WantedBy=multi-user.target
+```
+
 Here's a brief explanation of the key parts in this prometheus.service file:
 
 User and Group specify the Linux user and group under which Prometheus will run.
@@ -361,12 +398,15 @@ web.listen-address configures Prometheus to listen on all network interfaces on 
 web.enable-lifecycle allows for management of Prometheus through API calls.
 
 Enable and start Prometheus:
-
+```
 sudo systemctl enable prometheus
 sudo systemctl start prometheus
-Verify Prometheus's status:
+```
 
+Verify Prometheus's status:
+```
 sudo systemctl status prometheus
+```
 You can access Prometheus in a web browser using your server's IP and port 9090:
 
 http://<your-server-ip>:9090
@@ -393,10 +433,15 @@ Make sure to replace <your-jenkins-ip> and <your-jenkins-port> with the appropri
 
 Check the validity of the configuration file:
 
+```
 promtool check config /etc/prometheus/prometheus.yml
+```
 Reload the Prometheus configuration without restarting:
 
+```
 curl -X POST http://localhost:9090/-/reload
+```
+
 You can access Prometheus targets at:
 
 http://<your-prometheus-ip>:9090/targets
@@ -409,38 +454,49 @@ Install Grafana on Ubuntu 22.04 and Set it up to Work with Prometheus
 Step 1: Install Dependencies:
 
 First, ensure that all necessary dependencies are installed:
-
+```
 sudo apt-get update
 sudo apt-get install -y apt-transport-https software-properties-common
+```
 Step 2: Add the GPG Key:
 
 Add the GPG key for Grafana:
-
+```
 wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+```
 Step 3: Add Grafana Repository:
 
 Add the repository for Grafana stable releases:
-
+```
 echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+```
+
 Step 4: Update and Install Grafana:
 
 Update the package list and install Grafana:
-
+```
 sudo apt-get update
 sudo apt-get -y install grafana
+```
+
 Step 5: Enable and Start Grafana Service:
 
 To automatically start Grafana after a reboot, enable the service:
-
+```
 sudo systemctl enable grafana-server
-Then, start Grafana:
+```
 
+Then, start Grafana:
+```
 sudo systemctl start grafana-server
+```
 Step 6: Check Grafana Status:
 
 Verify the status of the Grafana service to ensure it's running correctly:
 
+```
 sudo systemctl status grafana-server
+```
 Step 7: Access Grafana Web Interface:
 
 Open a web browser and navigate to Grafana using your server's IP address. The default port for Grafana is 3000. For example:
